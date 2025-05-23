@@ -1,3 +1,9 @@
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+
 def select_semester_and_set_courses(driver, base_url, num_sem_selector, num_courses,
                                      css_sem_dropdown, css_search_field, num_courses_selector):
     try:
