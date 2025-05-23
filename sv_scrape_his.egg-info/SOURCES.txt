@@ -1,0 +1,9 @@
+README.md
+pyproject.toml
+SVscrapePy/scrape_data.py
+SVscrapePy/select_semester_and_set_courses.py
+sv_scrape_his.egg-info/PKG-INFO
+sv_scrape_his.egg-info/SOURCES.txt
+sv_scrape_his.egg-info/dependency_links.txt
+sv_scrape_his.egg-info/requires.txt
+sv_scrape_his.egg-info/top_level.txt

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sv_scrape_his"
+version = "0.1.0"
+description = "Scraping tools for HIS system"
+authors = [{ name = "Malte Hückstädt", email = "maltehueckstaedt@gmx.de" }]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "selenium",
+    "pandas",
+    "beautifulsoup4",
+    "lxml",
+    "requests",
+    "webdriver-manager"
+]
