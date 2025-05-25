@@ -1,3 +1,6 @@
+import re
+import pandas as pd
+
 def clean_prefixes(df):
     for col in df.columns:
         col_str = str(col).strip()

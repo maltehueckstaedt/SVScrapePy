@@ -1,3 +1,11 @@
+import re
+import time
+import pandas as pd
+from bs4 import BeautifulSoup
+from io import StringIO
+from tqdm import tqdm
+from selenium.webdriver.common.by import By
+
 def scrape_all_pages(driver, css_max_selector, max_pages=None):
     # Seitenanzahl ermitteln
     selector = driver.find_element(By.CSS_SELECTOR, css_max_selector)

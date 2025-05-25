@@ -1,3 +1,6 @@
+import time
+from selenium.webdriver.common.by import By
+
 def click_next_page(driver, css_next_page="#genSearchRes\\:id3f3bd34c5d6b1c79\\:id3f3bd34c5d6b1c79Navi2next", max_attempts=10):
     for attempt in range(1, max_attempts + 1):
 
