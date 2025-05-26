@@ -154,7 +154,7 @@ def scrape_inhalte(driver,
     return None
 
 
-def scrape_data(driver, missing_data, num_sem_selector, file_name):
+def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.5):
     total = len(missing_data)
     result_df = pd.DataFrame()
 
@@ -176,14 +176,14 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name):
 
             try:
                 driver.find_element(By.CSS_SELECTOR, "#genericSearchMask\\:search_e4ff321960e251186ac57567bec9f4ce\\:cm_exa_eventprocess_basic_data\\:fieldset\\:inputField_3_abb156a1126282e4cf40d48283b4e76d\\:idabb156a1126282e4cf40d48283b4e76d\\:termSelect_label").click()
-                time.sleep(.5)
+                time.sleep(sleep_time)
 
                 css_sem_num = f"#genericSearchMask\\:search_e4ff321960e251186ac57567bec9f4ce\\:cm_exa_eventprocess_basic_data\\:fieldset\\:inputField_3_abb156a1126282e4cf40d48283b4e76d\\:idabb156a1126282e4cf40d48283b4e76d\\:termSelect_{num_sem_selector}"
                 driver.find_element(By.CSS_SELECTOR, css_sem_num).click()
-                time.sleep(.5)
+                time.sleep(sleep_time)
 
                 driver.find_element(By.CSS_SELECTOR, "#genericSearchMask\\:buttonsBottom\\:toggleSearchShowAllCriteria").click()
-                time.sleep(.5)
+                time.sleep(sleep_time)
 
                 feld_titel = driver.find_element(By.CSS_SELECTOR, "#genericSearchMask\\:search_e4ff321960e251186ac57567bec9f4ce\\:cm_exa_eventprocess_basic_data\\:fieldset\\:inputField_0_1ad08e26bde39c9e4f1833e56dcce9b5\\:id1ad08e26bde39c9e4f1833e56dcce9b5")
                 feld_titel.clear()
@@ -196,7 +196,7 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name):
                         ccs_nummer = driver.find_element(By.CSS_SELECTOR, "#genericSearchMask\\:search_e4ff321960e251186ac57567bec9f4ce\\:cm_exa_eventprocess_basic_data\\:fieldset\\:inputField_2_7cc364bde72c1b1262427dc431caece3\\:id7cc364bde72c1b1262427dc431caece3")
                         break
                     except:
-                        time.sleep(0.5)
+                        time.sleep(sleep_time)
                 if not ccs_nummer:
                     print(f"[{i}] Kurs nicht gefunden: {titel} ({nummer}) – Feld 'Nummer' nicht erschienen")
                     break
@@ -204,7 +204,7 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name):
                 ccs_nummer.clear()
                 if pd.notna(nummer):
                     ccs_nummer.send_keys(str(nummer))
-                time.sleep(.5)
+                time.sleep(sleep_time)
 
                 try:
                     driver.find_element(By.CSS_SELECTOR, "#genericSearchMask\\:buttonsBottom\\:search").click()
@@ -219,13 +219,13 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name):
                         ccs_find = driver.find_element(By.CSS_SELECTOR, "#genSearchRes\\:id3f3bd34c5d6b1c79\\:id3f3bd34c5d6b1c79Table\\:0\\:tableRowAction")
                         break
                     except:
-                        time.sleep(0.5)
+                        time.sleep(sleep_time)
                 if not ccs_find:
                     print(f"[{i}] Kein Treffer für Kurs: {titel} ({nummer})")
                     break
 
                 ccs_find.click()
-                time.sleep(.5)
+                time.sleep(sleep_time)
 
                 semester = driver.find_element(By.CSS_SELECTOR, "#detailViewData\\:tabContainer\\:term-selection-container\\:termPeriodDropDownList_label").text
                 scraping_datum = pd.Timestamp.today().date()
@@ -257,7 +257,7 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name):
                 result_df = pd.concat([result_df, pd.DataFrame([row_data])], ignore_index=True)
 
                 driver.find_element(By.CSS_SELECTOR, "#statusLastLink1").click()
-                time.sleep(.5)
+                time.sleep(sleep_time)
 
             except Exception as e:
                 print(f"[{i}] Fehler bei Kurs: {titel} ({nummer}): {e}")
