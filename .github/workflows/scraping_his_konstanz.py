@@ -27,7 +27,7 @@ driver = webdriver.Chrome(options=options)
 # Parameter für das Scraping
 base_url = "https://zeus.uni-konstanz.de/hioserver/pages/startFlow.xhtml?_flowId=searchCourseNonStaff-flow&_flowExecutionKey=e1s1"
 sem_dropdown = "#genericSearchMask\\:search_e4ff321960e251186ac57567bec9f4ce\\:cm_exa_eventprocess_basic_data\\:fieldset\\:inputField_3_abb156a1126282e4cf40d48283b4e76d\\:idabb156a1126282e4cf40d48283b4e76d\\:termSelect_label"
-num_sem_selector = 3
+num_sem_selector = 4
 num_courses_selector = "#genSearchRes\\:id3f3bd34c5d6b1c79\\:id3f3bd34c5d6b1c79Navi2NumRowsInput"
 num_courses = "300"
 search_field = "#genericSearchMask\\:search_e4ff321960e251186ac57567bec9f4ce\\:cm_exa_eventprocess_basic_data\\:fieldset\\:inputField_0_1ad08e26bde39c9e4f1833e56dcce9b5\\:id1ad08e26bde39c9e4f1833e56dcce9b5"
@@ -52,7 +52,7 @@ base_info["titel"] = (
 driver.delete_all_cookies()
 driver.get(base_url)
 
-df = scrape_data(driver, base_info, num_sem_selector="3", sleep_time=0.5,
+df = scrape_data(driver, base_info, num_sem_selector="4", sleep_time=0.5,
                  file_name="courses_w2024_Konstanz.csv")
 
 # Speichern
