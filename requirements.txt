@@ -2,4 +2,5 @@ selenium==4.21.0
 pandas==2.2.3
 tqdm
 certifi
+html5lib
 git+https://github.com/maltehueckstaedt/SVScrapePy.git
