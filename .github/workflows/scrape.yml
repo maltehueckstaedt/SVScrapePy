@@ -39,3 +39,9 @@ jobs:
 
     - name: Run scraping script
       run: python scraping_his_konstanz.py
+
+    - name: Upload CSV als Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: konstanz-courses
+        path: courses_w2024_Konstanz.csv

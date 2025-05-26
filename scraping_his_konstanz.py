@@ -62,7 +62,7 @@ base_info["titel"] = (
 driver.delete_all_cookies()
 driver.get(base_url)
 
-df = scrape_data(driver, base_info, num_sem_selector="4", sleep_time=0.5,
+df = scrape_data(driver, base_info[0:10], num_sem_selector="4", sleep_time=0.5,
                  file_name="courses_w2024_Konstanz.csv")
 
 # Speichern
