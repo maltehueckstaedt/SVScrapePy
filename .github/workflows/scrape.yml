@@ -20,6 +20,11 @@ jobs:
     - name: Setup Google Chrome
       uses: browser-actions/setup-chrome@v1
 
+    - name: Überprüfe Google Chrome Installation
+      run: |
+        which google-chrome
+        google-chrome --version
+
     - name: Install ChromeDriver
       run: |
         CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -1)
