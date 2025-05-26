@@ -13,15 +13,6 @@ import pandas as pd
 import re
 import time
 
-def clean_names(df):
-    df.columns = (
-        df.columns.str.strip()
-                  .str.lower()
-                  .str.replace(r"[^\w\s]", "", regex=True)
-                  .str.replace(r"\s+", "_", regex=True)
-    )
-    return df
-
 # Selenium Chrome Optionen
 options = Options()
 options.add_argument("--headless")
@@ -42,7 +33,8 @@ search_field = "#genericSearchMask\\:search_e4ff321960e251186ac57567bec9f4ce\\:c
 
 # Scraping starten
 select_semester_and_set_courses(driver, base_url, num_sem_selector, num_courses,
-                                sem_dropdown, search_field, num_courses_selector)
+                                sem_dropdown, search_field, num_courses_selector,
+                                     sleep_time=2)
 
 css_max_selector = "#genSearchRes\\:id3f3bd34c5d6b1c79\\:id3f3bd34c5d6b1c79Navi2_div > div > span.dataScrollerPageText"
 base_info = scrape_all_pages(driver, css_max_selector, max_pages=None)
