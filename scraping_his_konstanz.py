@@ -34,7 +34,7 @@ search_field = "#genericSearchMask\\:search_e4ff321960e251186ac57567bec9f4ce\\:c
 # Scraping starten
 select_semester_and_set_courses(driver, base_url, num_sem_selector, num_courses,
                                 sem_dropdown, search_field, num_courses_selector,
-                                     sleep_time=2)
+                                     sleep_time=3)
 
 css_max_selector = "#genSearchRes\\:id3f3bd34c5d6b1c79\\:id3f3bd34c5d6b1c79Navi2_div > div > span.dataScrollerPageText"
 base_info = scrape_all_pages(driver, css_max_selector, max_pages=None)
