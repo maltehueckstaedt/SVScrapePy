@@ -8,7 +8,8 @@ from tqdm import tqdm
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
 
-from SVscrapePy.helpers import clean_prefixes, click_next_page
+from SVscrapePy.helpers import clean_prefixes, click_next_page, clean_names 
+
 
 def scrape_studiengaenge_module_html(driver, css_tab, sleep_time=0.5):
     try:
@@ -216,7 +217,7 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
                 continue
 
     finally:
-        result_df = result_df.clean_names()
+        result_df = clean_names(result_df)
         result_df.to_pickle(file_name)
         print(f"\nDaten gespeichert in {file_name} mit {len(result_df)} Zeilen.")
 

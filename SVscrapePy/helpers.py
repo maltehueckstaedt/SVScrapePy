@@ -44,6 +44,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
+def clean_names(df):
+    df.columns = (
+        df.columns.str.strip()
+                  .str.lower()
+                  .str.replace(r"[^\w\s]", "", regex=True)
+                  .str.replace(r"\s+", "_", regex=True)
+    )
+    return df
+
 
 def select_semester_and_set_courses(driver, base_url, num_sem_selector, num_courses,
                                      css_sem_dropdown, css_search_field, num_courses_selector,
