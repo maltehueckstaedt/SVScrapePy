@@ -1,4 +1,5 @@
 selenium==4.21.0
 pandas==2.2.2
 pyjanitor==0.25.0
+tqdm
 git+https://github.com/maltehueckstaedt/SVScrapePy.git
