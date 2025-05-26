@@ -9,10 +9,18 @@ from SVscrapePy.scrapers import (
     scrape_all_pages,
     scrape_data
 )
-import pandas as pd
-import janitor
+import pandas as pd 
 import re
 import time
+
+def clean_names(df):
+    df.columns = (
+        df.columns.str.strip()
+                  .str.lower()
+                  .str.replace(r"[^\w\s]", "", regex=True)
+                  .str.replace(r"\s+", "_", regex=True)
+    )
+    return df
 
 # Selenium Chrome Optionen
 options = Options()
@@ -40,7 +48,9 @@ css_max_selector = "#genSearchRes\\:id3f3bd34c5d6b1c79\\:id3f3bd34c5d6b1c79Navi2
 base_info = scrape_all_pages(driver, css_max_selector, max_pages=None)
 
 # Vorverarbeitung
-base_info = base_info.clean_names().rename(columns={"titel_der_veranstaltung": "titel"})
+base_info = clean_names(base_info)
+base_info = base_info.rename(columns={"titel_der_veranstaltung": "titel"})
+
 base_info["titel"] = (
     base_info["titel"]
     .str.replace(r"[()|+\-!\".=*„“]", " ", regex=True)
