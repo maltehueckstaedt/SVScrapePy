@@ -10,35 +10,15 @@ from selenium.common.exceptions import WebDriverException
 
 from SVscrapePy.helpers import clean_prefixes, click_next_page
 
-def scrape_zugeordnete_studiengaenge(driver,
-    css_zugeordnete_studiengaenge="#detailViewData\\:tabContainer\\:term-planning-container\\:courseOfStudies\\:courseOfStudyAssignments\\:courseOfStudyAssignmentsTable",
-    max_attempts=10):
+def scrape_studiengaenge_module_html(driver, css_tab, sleep_time=0.5):
+    try:
+        tab = driver.find_element("css selector", css_tab)
+        tab.click()
+        time.sleep(sleep_time)
+    except WebDriverException:
+        return None
 
-    zugeord_studgaenge_df = pd.DataFrame()
-
-    for attempt in range(1, max_attempts + 1):
-        try:
-            element = driver.find_element("css selector", css_zugeordnete_studiengaenge)
-        except WebDriverException:
-            continue
-
-        if element:
-            html = element.get_attribute("outerHTML")
-            soup = BeautifulSoup(html, "html.parser")
-            tables = tables = pd.read_html(StringIO(str(soup)), flavor="bs4")
-
-            if tables:
-                df = clean_prefixes(tables[0])
-                df.columns = [
-                    re.sub(r"_(sortierbare_spalte|aufwarts_sortieren)", "", col)
-                    for col in df.columns.astype(str)
-                ]
-                if not df.isna().all().all():
-                    return df
-                else:
-                    return zugeord_studgaenge_df
-
-    return zugeord_studgaenge_df
+    return driver.page_source 
 
 def scrape_termine(driver, css_labels=".labelItemLine label", css_answers=".labelItemLine .answer", max_attempts=10):
     for attempt in range(1, max_attempts + 1):
@@ -63,36 +43,6 @@ def scrape_termine(driver, css_labels=".labelItemLine label", css_answers=".labe
 
     return pd.DataFrame()
 
-def scrape_module(driver,
-                  css_module_tab="#detailViewData\\:tabContainer\\:term-planning-container\\:tabs\\:modulesCourseOfStudiesTab > span:nth-child(1)",
-                  css_module_content="#detailViewData\\:tabContainer\\:term-planning-container\\:modules\\:moduleAssignments",
-                  max_attempts=10):
-    
-    zugeordnete_module_tibble = pd.DataFrame()
-
-    for attempt in range(1, max_attempts + 1):
-        try:
-            module_tab = driver.find_element("css selector", css_module_tab)
-            module_tab.click()
-        except WebDriverException:
-            continue
-
-        try:
-            module_element = driver.find_element("css selector", css_module_content)
-        except WebDriverException:
-            return zugeordnete_module_tibble
-
-        if module_element:
-            html = module_element.get_attribute("outerHTML")
-            soup = BeautifulSoup(html, "html.parser")
-            tables = tables = pd.read_html(StringIO(str(soup)), flavor="bs4")
-
-            if len(tables) >= 2:
-                zugeordnete_module_tibble = clean_prefixes(tables[1])
-                zugeordnete_module_tibble.columns = zugeordnete_module_tibble.columns.astype(str)
-            return zugeordnete_module_tibble
-
-    return zugeordnete_module_tibble
 
 def scrape_inhalte(driver,
                    css_inhalte_tab="#detailViewData\\:tabContainer\\:term-planning-container\\:tabs\\:contentsTab > span:nth-child(1)",
@@ -232,14 +182,20 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
 
                 termine = scrape_termine(driver)
                 inhalte = scrape_inhalte(driver)
-                module = scrape_module(driver)
-                studiengaenge = scrape_zugeordnete_studiengaenge(driver)
+
+                # Neuer Aufruf: gesamte HTML-Seite nach Klick laden
+                full_html = scrape_studiengaenge_module_html(
+                            driver,
+                            css_tab="#detailViewData\\:tabContainer\\:term-planning-container\\:tabs\\:modulesCourseOfStudiesTab > span:nth-child(1)",
+                            sleep_time=sleep_time
+                        )
 
                 row_data = {
                     'semester': semester,
                     'scraping_datum': scraping_datum,
                     'titel': titel,
                     'nummer': nummer,
+                    'studiengaenge_module_html': full_html
                 }
 
                 if isinstance(termine, pd.DataFrame) and not termine.empty:
@@ -249,10 +205,6 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
 
                 if isinstance(inhalte, pd.DataFrame) and not inhalte.empty:
                     row_data['inhalte'] = inhalte
-                if isinstance(module, pd.DataFrame) and not module.empty:
-                    row_data['module'] = module
-                if isinstance(studiengaenge, pd.DataFrame) and not studiengaenge.empty:
-                    row_data['studiengaenge'] = studiengaenge
 
                 result_df = pd.concat([result_df, pd.DataFrame([row_data])], ignore_index=True)
 
