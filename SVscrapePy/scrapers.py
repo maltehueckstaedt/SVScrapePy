@@ -255,7 +255,7 @@ def scrape_all_pages(driver, css_max_selector, max_pages=None):
 
     return pd.concat(all_tables, ignore_index=True)
 
-    def scrape_termine(driver, css_labels=".labelItemLine label", css_answers=".labelItemLine .answer", max_attempts=10):
+def scrape_termine(driver, css_labels=".labelItemLine label", css_answers=".labelItemLine .answer", max_attempts=10):
     for attempt in range(1, max_attempts + 1):
         label_texts, answer_texts = [], []
 
