@@ -102,7 +102,7 @@ def scrape_inhalte(driver,
     return pd.DataFrame()
 
 from SVscrapePy.helpers import wait_and_click
-from SVscrapePy.helpers import scrape_termine, wait_and_find, try_with_retries
+from SVscrapePy.helpers import wait_and_find, try_with_retries
 
 
 def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.5, base_url=None, driver_restart_fn=None):
