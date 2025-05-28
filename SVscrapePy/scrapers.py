@@ -101,6 +101,8 @@ def scrape_inhalte(driver,
     print(f"Maximale Anzahl an Versuchen ({max_attempts}) erreicht. Scraping wird abgebrochen.")
     return pd.DataFrame()
 
+from SVscrapePy.helpers import wait_and_click
+
 def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.5, base_url=None, driver_restart_fn=None):
     total = len(missing_data)
     result_df = pd.DataFrame()
