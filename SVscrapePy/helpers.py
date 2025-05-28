@@ -96,3 +96,37 @@ def select_semester_and_set_courses(driver, base_url, num_sem_selector, num_cour
 
     except Exception as e:
         print(f"Fehler: {e}")
+
+
+from selenium.common.exceptions import StaleElementReferenceException
+
+def wait_and_find(driver, by, selector, timeout=15):
+    return WebDriverWait(driver, timeout).until(EC.presence_of_element_located((by, selector)))
+
+def wait_and_click(driver, by, selector, timeout=15):
+    for _ in range(3):
+        try:
+            el = wait_and_find(driver, by, selector, timeout)
+            driver.execute_script("arguments[0].click();", el)
+            return el
+        except StaleElementReferenceException:
+            time.sleep(1)
+    raise
+
+def try_with_retries(func, retries=3, wait=2):
+    for i in range(retries):
+        try:
+            return func()
+        except Exception:
+            time.sleep(wait * (i + 1))
+    raise
+
+from selenium.common.exceptions import StaleElementReferenceException
+
+def try_with_retries(func, retries=3, wait=2):
+    for i in range(retries):
+        try:
+            return func()
+        except Exception:
+            time.sleep(wait * (i + 1))
+    raise
