@@ -198,7 +198,8 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
                     row_data.pop("nummer", None)
 
                 if isinstance(inhalte, pd.DataFrame) and not inhalte.empty:
-                    row_data['inhalte'] = inhalte
+                    for col, val in inhalte.iloc[0].items():
+                        row_data[col] = val
 
                 result_df = pd.concat([result_df, pd.DataFrame([row_data])], ignore_index=True)
 
@@ -215,6 +216,7 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
         print(f"\nDaten gespeichert in {file_name} mit {len(result_df)} Zeilen.")
 
     return result_df
+
 
 
 import re
