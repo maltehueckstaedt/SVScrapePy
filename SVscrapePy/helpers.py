@@ -131,6 +131,7 @@ def try_with_retries(func, retries=3, wait=2):
             time.sleep(wait * (i + 1))
     raise
 
+from selenium.webdriver.chrome.options import Options
 def restart_driver():
     options = Options()
     options.headless = True
