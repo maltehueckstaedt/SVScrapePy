@@ -130,3 +130,8 @@ def try_with_retries(func, retries=3, wait=2):
         except Exception:
             time.sleep(wait * (i + 1))
     raise
+
+def restart_driver():
+    options = Options()
+    options.headless = True
+    return webdriver.Chrome(options=options)
