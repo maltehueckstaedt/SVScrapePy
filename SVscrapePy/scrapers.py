@@ -44,17 +44,13 @@ def scrape_inhalte(driver,
         return name
 
     for attempt in range(max_attempts):
-        print(f"Versuch Registerkarte >>Inhalte<< zu finden Nr. {attempt + 1} von maximal {max_attempts} ...")
 
         try:
             inhalte_tab = driver.find_element(By.CSS_SELECTOR, css_inhalte_tab)
             inhalte_tab.click()
         except Exception as e:
-            print(f"Fehler beim Klicken auf das Inhalte-Tab-Element: {e}")
             if check_network_errors():
                 continue
-
-        print("Starte das Scraping der Registerkarte >>Inhalte<<")
 
         found_containers = 0
         try:
@@ -64,13 +60,10 @@ def scrape_inhalte(driver,
                 if elements:
                     found_containers += 1
         except Exception as e:
-            print(f"Fehler beim Zaehlen der Container: {e}")
 
         if found_containers == 0:
-            print("Keine Container gefunden")
             return pd.DataFrame()
 
-        print(f"Anzahl gefundener Container: {found_containers}")
         container_dict = {}
 
         for i in range(found_containers):
@@ -81,7 +74,6 @@ def scrape_inhalte(driver,
                 title_element = driver.find_element(By.CSS_SELECTOR, css_title_selector % i)
                 title_text = title_element.text.strip()
             except NoSuchElementException:
-                print(f"Fehler: Kein Titelelement fuer Container {i} gefunden")
                 if check_network_errors():
                     continue
 
@@ -89,7 +81,6 @@ def scrape_inhalte(driver,
                 content_element = driver.find_element(By.CSS_SELECTOR, css_content_selector % i)
                 content_text = content_element.text.strip()
             except NoSuchElementException:
-                print(f"Fehler: Kein Inhaltselement fuer Container {i} gefunden")
                 if check_network_errors():
                     continue
 
@@ -98,7 +89,6 @@ def scrape_inhalte(driver,
 
         return pd.DataFrame([container_dict])
 
-    print(f"Maximale Anzahl an Versuchen ({max_attempts}) erreicht. Scraping wird abgebrochen.")
     return pd.DataFrame()
 
 from SVscrapePy.helpers import wait_and_click
