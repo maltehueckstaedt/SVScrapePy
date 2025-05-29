@@ -11,20 +11,47 @@ from selenium.common.exceptions import WebDriverException
 from SVscrapePy.helpers import clean_prefixes, click_next_page, clean_names 
 
 
-def scrape_studiengaenge_module_html(driver, css_tab, sleep_time=0.5):
+def scrape_studiengaenge_module_html(driver, css_tab, css_module_table, css_studiengang_table, sleep_time=0.5):
+    print(">> Starte das Scraping der Registerkarte >>Module/Studiengaenge<<")
+
     try:
         try_with_retries(lambda: wait_and_click(driver, By.CSS_SELECTOR, css_tab))
         time.sleep(sleep_time)
-    except:
-        return None
-    return driver.page_source
+    except Exception:
+        print(">> Fehler beim Öffnen der Registerkarte.")
+        return pd.DataFrame([{"Module": None, "Studiengänge": None}])
 
+    # Module
+    module_df = None
+    try:
+        module_elem = driver.find_element(By.CSS_SELECTOR, css_module_table)
+        html = module_elem.get_attribute("outerHTML")
+        module_df = pd.read_html(StringIO(html))[0]
+        module_df = module_df.iloc[2:]
+        module_df = clean_prefixes(module_df)
+        module_df.columns = module_df.columns.str.replace(r"\[Sortierbare Spalte\]", "", regex=True).str.strip()
 
-import time
-import pandas as pd
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-import re
+        print(">> Module gefunden.")
+    except Exception:
+        print(">> Keine Module gefunden.")
+
+    # Studiengänge
+    studiengang_df = None
+    try:
+        studiengang_elem = driver.find_element(By.CSS_SELECTOR, css_studiengang_table)
+        html = studiengang_elem.get_attribute("outerHTML")
+        studiengang_df = pd.read_html(StringIO(html))[0]
+        studiengang_df = clean_prefixes(studiengang_df)
+        studiengang_df.columns = studiengang_df.columns.str.replace(r"\[Sortierbare Spalte\]", "", regex=True).str.strip()
+
+        print(">> Studiengänge gefunden.")
+    except Exception:
+        print(">> Keine Studiengänge gefunden.")
+
+    return pd.DataFrame([{
+        "zugeordnete_module_tibble": module_df,
+        "zugeordnete_studiengaenge_tibble": studiengang_df
+    }])
 
 def scrape_inhalte(driver,
                    css_inhalte_tab="#detailViewData\\:tabContainer\\:term-planning-container\\:tabs\\:contentsTab > span:nth-child(1)",
@@ -60,6 +87,7 @@ def scrape_inhalte(driver,
                 if elements:
                     found_containers += 1
         except Exception as e:
+            pass
 
         if found_containers == 0:
             return pd.DataFrame()
@@ -168,19 +196,23 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
 
                 termine = scrape_termine(driver)
                 inhalte = scrape_inhalte(driver)
-                full_html = scrape_studiengaenge_module_html(
-                    driver,
-                    css_tab="#detailViewData\\:tabContainer\\:term-planning-container\\:tabs\\:modulesCourseOfStudiesTab > span:nth-child(1)",
-                    sleep_time=sleep_time
-                )
+
+                css_tab = "#detailViewData\\:tabContainer\\:term-planning-container\\:tabs\\:modulesCourseOfStudiesTab > span:nth-child(1)"
+                css_module_table = "#detailViewData\\:tabContainer\\:term-planning-container\\:modules\\:moduleAssignments\\:moduleAssignmentsTable"
+                css_studiengang_table = "#detailViewData\\:tabContainer\\:term-planning-container\\:courseOfStudies\\:courseOfStudyAssignments\\:tableGroup > table"
+                module_studiengaenge = scrape_studiengaenge_module_html(driver, css_tab, css_module_table, css_studiengang_table)
+
 
                 row_data = {
                     'semester': semester,
                     'scraping_datum': scraping_datum,
                     'titel': titel,
-                    'nummer': nummer,
-                    'studiengaenge_module_html': full_html
+                    'nummer': nummer
                 }
+
+                if isinstance(module_studiengaenge, pd.DataFrame) and not module_studiengaenge.empty:
+                    for col in module_studiengaenge.columns:
+                        row_data[col] = module_studiengaenge.iloc[0][col]
 
                 if isinstance(termine, pd.DataFrame) and not termine.empty:
                     row_data.update(termine.iloc[0].to_dict())
@@ -202,9 +234,8 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
 
     finally:
         result_df = clean_names(result_df)
-        result_df.to_csv(file_name, index=False)
+        result_df.to_pickle(file_name)
         print(f"\nDaten gespeichert in {file_name} mit {len(result_df)} Zeilen.")
-
     return result_df
 
 
