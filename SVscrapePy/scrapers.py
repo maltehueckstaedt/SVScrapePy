@@ -12,13 +12,13 @@ from SVscrapePy.helpers import clean_prefixes, click_next_page, clean_names
 
 
 def scrape_studiengaenge_module_html(driver, css_tab, css_module_table, css_studiengang_table, sleep_time=0.5):
-    print(">> Starte das Scraping der Registerkarte >>Module/Studiengaenge<<")
+    tqdm.write(">> Starte das Scraping der Registerkarte >>Module/Studiengaenge<<")
 
     try:
         try_with_retries(lambda: wait_and_click(driver, By.CSS_SELECTOR, css_tab))
         time.sleep(sleep_time)
     except Exception:
-        print(">> Fehler beim Öffnen der Registerkarte.")
+        tqdm.write(">> Fehler beim Öffnen der Registerkarte.")
         return pd.DataFrame([{"Module": None, "Studiengänge": None}])
 
     # Module
@@ -31,9 +31,9 @@ def scrape_studiengaenge_module_html(driver, css_tab, css_module_table, css_stud
         module_df = clean_prefixes(module_df)
         module_df.columns = module_df.columns.str.replace(r"\[Sortierbare Spalte\]", "", regex=True).str.strip()
 
-        print(">> Module gefunden.")
+        tqdm.write(">> Module gefunden.")
     except Exception:
-        print(">> Keine Module gefunden.")
+        tqdm.write(">> Keine Module gefunden.")
 
     # Studiengänge
     studiengang_df = None
@@ -44,9 +44,9 @@ def scrape_studiengaenge_module_html(driver, css_tab, css_module_table, css_stud
         studiengang_df = clean_prefixes(studiengang_df)
         studiengang_df.columns = studiengang_df.columns.str.replace(r"\[Sortierbare Spalte\]", "", regex=True).str.strip()
 
-        print(">> Studiengänge gefunden.")
+        tqdm.write(">> Studiengänge gefunden.")
     except Exception:
-        print(">> Keine Studiengänge gefunden.")
+        tqdm.write(">> Keine Studiengänge gefunden.")
 
     return pd.DataFrame([{
         "zugeordnete_module_tibble": module_df,
@@ -131,7 +131,7 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
         progress = tqdm(range(total), desc="Scraping", unit="Kurs")
         for i in progress:
             if i > 0 and i % 100 == 0 and driver_restart_fn and base_url:
-                print(f"[{i}] Neustart des Browsers...")
+                tqdm.write(f"[{i}] Neustart des Browsers...")
                 driver.quit()
                 driver = driver_restart_fn()
                 driver.get(base_url)
@@ -160,7 +160,7 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
                         time.sleep(sleep_time)
 
                 if not ccs_nummer:
-                    print(f"[{i}] Kurs nicht gefunden: {titel} ({nummer}) – Feld 'Nummer' nicht erschienen")
+                    tqdm.write(f"[{i}] Kurs nicht gefunden: {titel} ({nummer}) – Feld 'Nummer' nicht erschienen")
                     continue
 
                 ccs_nummer.clear()
@@ -173,7 +173,7 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
                     wait_and_click(driver, By.CSS_SELECTOR, "#genericSearchMask\\:buttonsBottom\\:search")
                     time.sleep(sleep_time)
                 except Exception as e:
-                    print(f"[{i}] Fehler beim Klicken auf Suche: {e}")
+                    tqdm.write(f"[{i}] Fehler beim Klicken auf Suche: {e}")
                     continue
 
                 ccs_find = None
@@ -185,7 +185,7 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
                         time.sleep(sleep_time)
 
                 if not ccs_find:
-                    print(f"[{i}] Kein Treffer für Kurs: {titel} ({nummer})")
+                    tqdm.write(f"[{i}] Kein Treffer für Kurs: {titel} ({nummer})")
                     continue
 
                 ccs_find.click()
@@ -229,13 +229,13 @@ def scrape_data(driver, missing_data, num_sem_selector, file_name, sleep_time=0.
                 time.sleep(sleep_time)
 
             except Exception as e:
-                print(f"[{i}] Fehler bei Kurs: {titel} ({nummer}): {e}")
+                tqdm.write(f"[{i}] Fehler bei Kurs: {titel} ({nummer}): {e}")
                 continue
 
     finally:
         result_df = clean_names(result_df)
         result_df.to_pickle(file_name)
-        print(f"\nDaten gespeichert in {file_name} mit {len(result_df)} Zeilen.")
+        tqdm.write(f"\nDaten gespeichert in {file_name} mit {len(result_df)} Zeilen.")
     return result_df
 
 
@@ -263,7 +263,7 @@ def scrape_all_pages(driver, css_max_selector, max_pages=None):
     all_tables = []
 
     for i in tqdm(range(1, select_end + 1), desc="Scraping Seiten", unit="Seite"):
-        print(f"\n→ Starte Scraping der Base-Informationen für Seite {i}")
+        tqdm.write(f"\n→ Starte Scraping der Base-Informationen für Seite {i}")
 
         table_element = driver.find_element(By.CSS_SELECTOR, "#genSearchRes\\:id3f3bd34c5d6b1c79\\:id3f3bd34c5d6b1c79Table")
         table_html = table_element.get_attribute("outerHTML")
