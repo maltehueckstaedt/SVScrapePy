@@ -56,7 +56,7 @@ def clean_names(df):
 
 def select_semester_and_set_courses(driver, base_url, num_sem_selector, num_courses,
                                      css_sem_dropdown, css_search_field, num_courses_selector,
-                                     sleep_time=1.0):
+                                     base_selector, sleep_time=1.0):
     try:
         print("Öffne Seite ...")
         driver.get(base_url)
@@ -68,8 +68,8 @@ def select_semester_and_set_courses(driver, base_url, num_sem_selector, num_cour
         time.sleep(sleep_time)
 
         print(f"Wähle Semester mit Index {num_sem_selector} ...")
-        base_selector = css_sem_dropdown.rsplit("_", 1)[0]
-        full_selector = f"{base_selector}_{num_sem_selector}"
+        base_selector = "#genericSearchMask\\:search_e4ff321960e251186ac57567bec9f4ce\\:cm_exa_eventprocess_basic_data\\:fieldset\\:inputField_3_abb156a1126282e4cf40d48283b4e76d\\:idabb156a1126282e4cf40d48283b4e76d\\:termSelect_"
+        full_selector = base_selector + str(num_sem_selector)
         semester = driver.find_element(By.CSS_SELECTOR, full_selector)
         semester.click()
         time.sleep(sleep_time)
@@ -96,7 +96,6 @@ def select_semester_and_set_courses(driver, base_url, num_sem_selector, num_cour
 
     except Exception as e:
         print(f"Fehler: {e}")
-
 
 from selenium.common.exceptions import StaleElementReferenceException
 
